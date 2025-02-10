@@ -5,35 +5,27 @@ import axios from "axios";
 
 export default function Home() {
     const instance = axios.create({
-        baseURL: "https://soto-account.deno.dev",
+        // baseURL: "https://soto-account.deno.dev",
+        // 慶太のブランチ
+        baseURL: "https://soto-account--keita-address-cors.deno.dev/",
+        // baseURL: "http://0.0.0.0:8000",
         headers: {
             'Content-Type': 'application/json',
-            "Access-Control-Allow-Origin": "*",
         },
     })
 
-    instance.get('/accounts').then(function (response) {
-        console.log(response);
-    }).catch(function (error) {
-        console.log(error);
-    })
-
+    // TODO ここから再開
     async function fetchDataTable() {
         try {
-            const rows = await axios.get('/accounts');
+            const rows = await instance.get('/accounts');
             console.log(rows);
+            return rows;
         } catch (error) {
             console.log(error);
         }
     }
 
-    const rows = [
-        {
-            id: '9',
-            name: 'kankurou',
-            balance: '0',
-        }
-    ];
+    const rows = fetchDataTable();
 
     const headers = [
         {
