@@ -14,10 +14,15 @@ export default function Home() {
         },
     })
 
-    // TODO ここから再開
+    instance.get('/accounts').then(function (response) {
+        console.log(response);
+    }).catch(function (error) {
+        console.log(error);
+    })
+
     async function fetchDataTable() {
         try {
-            const rows = await instance.get('/accounts');
+            const rows = await axios.get('/accounts');
             console.log(rows);
             return rows;
         } catch (error) {
@@ -25,7 +30,13 @@ export default function Home() {
         }
     }
 
-    const rows = fetchDataTable();
+    const rows = [
+        {
+            id: '9',
+            name: 'kankurou',
+            balance: '0',
+        }
+    ];
 
     const headers = [
         {
