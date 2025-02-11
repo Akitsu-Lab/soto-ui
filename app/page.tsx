@@ -1,62 +1,78 @@
 'use client';
-import {Button, DataTable, Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@carbon/react";
+import {DataTable, Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@carbon/react";
 import axios from "axios";
+import {useEffect, useState} from "react";
+
+// APIで受け取るアカウント情報の型
+interface UserAccount {
+    id: string;
+    account_name: string;
+    balance: number;
+    created_at: string; // ISO 8601 日付文字列
+    updated_at: string; // ISO 8601 日付文字列
+}
+
+// APIのエンドポイントなどの設定
+const instance = axios.create({
+    // baseURL: "https://soto-account.deno.dev",
+    // 慶太のブランチ
+    baseURL: "https://soto-account--keita-address-cors.deno.dev/",
+    // baseURL: "http://0.0.0.0:8000",
+    headers: {
+        'Content-Type': 'application/json',
+    },
+})
+
+// Tableのヘッダー
+const headers = [
+    {
+        key: 'id',
+        header: 'ID',
+    },
+    {
+        key: 'account_name',
+        header: 'アカウント名',
+    },
+    {
+        key: 'balance',
+        header: '残高',
+    }
+];
 
 
 export default function Home() {
-    const instance = axios.create({
-        // baseURL: "https://soto-account.deno.dev",
-        // 慶太のブランチ
-        baseURL: "https://soto-account--keita-address-cors.deno.dev/",
-        // baseURL: "http://0.0.0.0:8000",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
 
-    instance.get('/accounts').then(function (response) {
-        console.log(response);
-    }).catch(function (error) {
-        console.log(error);
-    })
+    const [rows, setRows] = useState<UserAccount[]>([])
 
-    async function fetchDataTable() {
-        try {
-            const rows = await axios.get('/accounts');
-            console.log(rows);
-            return rows;
-        } catch (error) {
+
+    useEffect(() => {
+        instance.get('/accounts').then(function (response) {
+            // setRows(response.data)
+            console.log(response.data);
+            // 後で消す
+            const transformedData: UserAccount[] = response.data.map((item: {
+                account_id: number;
+                account_name: string;
+                balance: number;
+                created_at: string;
+                updated_at: string;
+            }) => ({
+                id: String(item.account_id), // `id` を `string` に変換
+                account_name: item.account_name,
+                balance: item.balance,
+                created_at: item.created_at,
+                updated_at: item.updated_at,
+            }));
+            setRows(transformedData);
+        }).catch(function (error) {
             console.log(error);
-        }
-    }
+        })
+    }, [])
 
-    const rows = [
-        {
-            id: '9',
-            name: 'kankurou',
-            balance: '0',
-        }
-    ];
-
-    const headers = [
-        {
-            key: 'id',
-            header: 'ID',
-        },
-        {
-            key: 'name',
-            header: 'アカウント名',
-        },
-        {
-            key: 'balance',
-            header: '残高',
-        }
-    ];
 
     return (
         <div>
             <main>
-                <Button>a</Button>
                 <DataTable rows={rows} headers={headers}>
                     {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
                         <Table {...getTableProps()}>
