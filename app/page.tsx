@@ -14,10 +14,8 @@ interface UserAccount {
 
 // APIのエンドポイントなどの設定
 const instance = axios.create({
-    // baseURL: "https://soto-account.deno.dev",
-    // 慶太のブランチ
-    baseURL: "https://soto-account--keita-address-cors.deno.dev/",
-    // baseURL: "http://0.0.0.0:8000",
+    // NEXT_PUBLIC_XXXにする必要があるようだ
+    baseURL: process.env.NEXT_PUBLIC_API_SERVER_URL || "http://0.0.0.0:8000",
     headers: {
         'Content-Type': 'application/json',
     },
@@ -46,6 +44,7 @@ export default function Home() {
 
 
     useEffect(() => {
+        console.log(process.env.API_SERVER_URL, instance.getUri())
         instance.get('/accounts').then(function (response) {
             // setRows(response.data)
             console.log(response.data);
@@ -79,7 +78,7 @@ export default function Home() {
                             <TableHead>
                                 <TableRow>
                                     {headers.map((header) => (
-                                        <TableHeader {...getHeaderProps({header})} key={header.key}>
+                                        <TableHeader {...getHeaderProps({header, isSortable: true})} key={header.key}>
                                             {header.header}
                                         </TableHeader>
                                     ))}
