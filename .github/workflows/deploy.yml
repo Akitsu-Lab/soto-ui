@@ -38,7 +38,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "soto-ui"
-          entrypoint: "."
+          entrypoint: "app/page.tsx"
           root: "."
-          include: .next, public
+          
           
