@@ -1,5 +1,18 @@
 'use client';
-import {DataTable, Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@carbon/react";
+import {
+    Button,
+    Column,
+    DataTable,
+    Grid,
+    Header,
+    HeaderName,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@carbon/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
 
@@ -69,35 +82,50 @@ export default function Home() {
 
     return (
         <div>
-            <main>
-                <DataTable rows={rows} headers={headers}>
-                    {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
-                        <Table {...getTableProps()}>
-                            <TableHead>
-                                <TableRow>
-                                    {headers.map((header) => (
-                                        <TableHeader {...getHeaderProps({header, isSortable: true})} key={header.key}>
-                                            {header.header}
-                                        </TableHeader>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow {...getRowProps({row})} key={row.id}>
-                                        {row.cells.map((cell) => (
-                                            <TableCell key={cell.id}>{cell.value}</TableCell>
+            <Header aria-label="Platform Name">
+                <HeaderName href="#" prefix="秋津ラボ">
+                    くじ
+                </HeaderName>
+            </Header>
+
+            <Grid style={{marginTop: "48px"}}>
+                <Column>
+                    <div>アカウントテーブル</div>
+                </Column>
+                <Column>
+                    <Button>アカウント登録</Button>
+                </Column>
+            </Grid>
+            <Grid>
+                <Column span={16}>
+                    <DataTable rows={rows} headers={headers}>
+                        {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
+                            <Table {...getTableProps()}>
+                                <TableHead>
+                                    <TableRow>
+                                        {headers.map((header) => (
+                                            <TableHeader {...getHeaderProps({header, isSortable: true})}
+                                                         key={header.key}>
+                                                {header.header}
+                                            </TableHeader>
                                         ))}
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
-                </DataTable>
-            </main>
-            <footer>
+                                </TableHead>
+                                <TableBody>
+                                    {rows.map((row) => (
+                                        <TableRow {...getRowProps({row})} key={row.id}>
+                                            {row.cells.map((cell) => (
+                                                <TableCell key={cell.id}>{cell.value}</TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </DataTable>
+                </Column>
+            </Grid>
 
-            </footer>
         </div>
     );
 }
