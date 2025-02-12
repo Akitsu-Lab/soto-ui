@@ -6,10 +6,8 @@ import {useEffect, useState} from "react";
 // APIで受け取るアカウント情報の型
 interface UserAccount {
     id: string;
-    account_name: string;
+    accountName: string;
     balance: number;
-    created_at: string; // ISO 8601 日付文字列
-    updated_at: string; // ISO 8601 日付文字列
 }
 
 // APIのエンドポイントなどの設定
@@ -28,7 +26,7 @@ const headers = [
         header: 'ID',
     },
     {
-        key: 'account_name',
+        key: 'accountName',
         header: 'アカウント名',
     },
     {
@@ -50,14 +48,14 @@ export default function Home() {
             console.log(response.data);
             // 後で消す
             const transformedData: UserAccount[] = response.data.map((item: {
-                account_id: number;
-                account_name: string;
+                accountId: number;
+                accountName: string;
                 balance: number;
                 created_at: string;
                 updated_at: string;
             }) => ({
-                id: String(item.account_id), // `id` を `string` に変換
-                account_name: item.account_name,
+                id: String(item.accountId), // `id` を `string` に変換
+                accountName: item.accountName,
                 balance: item.balance,
                 created_at: item.created_at,
                 updated_at: item.updated_at,
