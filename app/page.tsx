@@ -9,9 +9,11 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableContainer,
     TableHead,
     TableHeader,
-    TableRow
+    TableRow,
+    TextInput
 } from "@carbon/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
@@ -88,39 +90,46 @@ export default function Home() {
                 </HeaderName>
             </Header>
 
-            <Grid style={{marginTop: "48px"}}>
-                <Column>
-                    <div>アカウントテーブル</div>
+            <Grid className={"cds--content"}>
+                <Column span={4}>
                 </Column>
-                <Column>
-                    <Button>アカウント登録</Button>
+                <Column span={4}>
+                    <TextInput id="text-input-1" type="text" labelText={"アカウント名"}
+                               placeholder={"例：Kankuro"} helperText={"追加したいアカウントの名前"}></TextInput>
+                </Column>
+                <Column span={4}>
+                    <Button>登録</Button>
                 </Column>
             </Grid>
+
             <Grid>
                 <Column span={16}>
                     <DataTable rows={rows} headers={headers}>
+
                         {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
-                            <Table {...getTableProps()}>
-                                <TableHead>
-                                    <TableRow>
-                                        {headers.map((header) => (
-                                            <TableHeader {...getHeaderProps({header, isSortable: true})}
-                                                         key={header.key}>
-                                                {header.header}
-                                            </TableHeader>
-                                        ))}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {rows.map((row) => (
-                                        <TableRow {...getRowProps({row})} key={row.id}>
-                                            {row.cells.map((cell) => (
-                                                <TableCell key={cell.id}>{cell.value}</TableCell>
+                            <TableContainer title={"アカウントテーブル"} description={"くじを買えるアカウントの一覧"}>
+                                <Table {...getTableProps()}>
+                                    <TableHead>
+                                        <TableRow>
+                                            {headers.map((header) => (
+                                                <TableHeader {...getHeaderProps({header, isSortable: true})}
+                                                             key={header.key}>
+                                                    {header.header}
+                                                </TableHeader>
                                             ))}
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHead>
+                                    <TableBody>
+                                        {rows.map((row) => (
+                                            <TableRow {...getRowProps({row})} key={row.id}>
+                                                {row.cells.map((cell) => (
+                                                    <TableCell key={cell.id}>{cell.value}</TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
                         )}
                     </DataTable>
                 </Column>
