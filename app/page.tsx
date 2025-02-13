@@ -1,5 +1,20 @@
 'use client';
-import {DataTable, Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@carbon/react";
+import {
+    Button,
+    Column,
+    DataTable,
+    Grid,
+    Header,
+    HeaderName,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableHeader,
+    TableRow,
+    TextInput
+} from "@carbon/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
 
@@ -69,35 +84,57 @@ export default function Home() {
 
     return (
         <div>
-            <main>
-                <DataTable rows={rows} headers={headers}>
-                    {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
-                        <Table {...getTableProps()}>
-                            <TableHead>
-                                <TableRow>
-                                    {headers.map((header) => (
-                                        <TableHeader {...getHeaderProps({header, isSortable: true})} key={header.key}>
-                                            {header.header}
-                                        </TableHeader>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow {...getRowProps({row})} key={row.id}>
-                                        {row.cells.map((cell) => (
-                                            <TableCell key={cell.id}>{cell.value}</TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
-                </DataTable>
-            </main>
-            <footer>
+            <Header aria-label="Platform Name">
+                <HeaderName href="#" prefix="秋津ラボ">
+                    くじ
+                </HeaderName>
+            </Header>
 
-            </footer>
+            <Grid className={"cds--content"}>
+                <Column span={4}>
+                </Column>
+                <Column span={4}>
+                    <TextInput id="text-input-1" type="text" labelText={"アカウント名"}
+                               placeholder={"例：Kankuro"} helperText={"追加したいアカウントの名前"}></TextInput>
+                </Column>
+                <Column span={4}>
+                    <Button>登録</Button>
+                </Column>
+            </Grid>
+
+            <Grid>
+                <Column span={16}>
+                    <DataTable rows={rows} headers={headers}>
+
+                        {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
+                            <TableContainer title={"アカウントテーブル"} description={"くじを買えるアカウントの一覧"}>
+                                <Table {...getTableProps()}>
+                                    <TableHead>
+                                        <TableRow>
+                                            {headers.map((header) => (
+                                                <TableHeader {...getHeaderProps({header, isSortable: true})}
+                                                             key={header.key}>
+                                                    {header.header}
+                                                </TableHeader>
+                                            ))}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {rows.map((row) => (
+                                            <TableRow {...getRowProps({row})} key={row.id}>
+                                                {row.cells.map((cell) => (
+                                                    <TableCell key={cell.id}>{cell.value}</TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        )}
+                    </DataTable>
+                </Column>
+            </Grid>
+
         </div>
     );
 }
