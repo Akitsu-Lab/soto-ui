@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Soto くじ",
+    title: "秋津ラボ くじ",
     description: "秋津ラボの宝くじアプリ",
 };
 
