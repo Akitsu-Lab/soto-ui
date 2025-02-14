@@ -82,7 +82,15 @@ export default function Home() {
                 balance: item.balance
             }));
             setRows(transformedData);
-        } catch (error) {
+        } catch (e) {
+            const error = e as Error | AxiosError;
+            if (axios.isAxiosError(error) && error.response) {
+                setToastTitle(error.response.data);
+                setToastSubtitle(error.message);
+                setToastKind('error');
+            } else {
+                // TODO native errorの場合
+            }
             console.error("データ取得エラー:", error);
         } finally {
             setLoading(false);
@@ -147,7 +155,7 @@ export default function Home() {
                         <DataTable rows={rows} headers={headers}>
 
                             {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
-                                <TableContainer title={"アカウントテーブル"}
+                                <TableContainer title={"アカウントリスト"}
                                                 description={"くじを買えるアカウントの一覧"}>
                                     <TableToolbar>
                                         <TableToolbarContent>
