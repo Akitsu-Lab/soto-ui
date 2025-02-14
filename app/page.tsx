@@ -59,7 +59,9 @@ const headers = [
 export default function Home() {
 
     const [rows, setRows] = useState<UserAccount[]>([])
+    const [userNameInput, setUserNameInput] = useState<string>("")
     const [loading, setLoading] = useState<boolean>(false);
+
     // アカウントリスト取得
     const fetchAccounts = async () => {
         setLoading(true);
@@ -83,6 +85,17 @@ export default function Home() {
         }
     };
 
+    // 新規アカウント作成
+    const createAccount = async (accountName: string) => {
+        try {
+            const response = await instance.post('/accounts', {accountName: accountName});
+            console.log("新しいアカウントが作成されました:", response.data);
+            fetchAccounts();
+        } catch (error) {
+            console.error("アカウント作成エラー:", error);
+        }
+    }
+
     useEffect(() => {
         fetchAccounts();
     }, [])
@@ -99,10 +112,11 @@ export default function Home() {
             <Grid className={"cds--content"}>
                 <Column span={4}>
                     <TextInput id="text-input-1" type="text" labelText={"アカウント名"}
-                               placeholder={"例：Kankuro"} helperText={"追加したいアカウントの名前"}></TextInput>
+                               placeholder={"例：Kankuro"} helperText={"追加したいアカウントの名前"}
+                               value={userNameInput} onChange={(e) => setUserNameInput(e.target.value)}></TextInput>
                 </Column>
                 <Column span={4}>
-                    <Button>登録</Button>
+                    <Button onClick={() => createAccount(userNameInput)}>登録</Button>
                 </Column>
             </Grid>
 
