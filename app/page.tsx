@@ -17,9 +17,10 @@ import {
     TableToolbar,
     TableToolbarContent,
     TableToolbarSearch,
-    TextInput
+    TextInput,
+    ToastNotification
 } from "@carbon/react";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {useEffect, useState} from "react";
 import {Renew} from "@carbon/icons-react";
 
@@ -61,6 +62,9 @@ export default function Home() {
     const [rows, setRows] = useState<UserAccount[]>([])
     const [userNameInput, setUserNameInput] = useState<string>("")
     const [loading, setLoading] = useState<boolean>(false);
+    const [toastTitle, setToastTitle] = useState<string>("");
+    const [toastSubTitle, setToastSubtitle] = useState<string>("");
+    const [toastKind, setToastKind] = useState<'error' | 'info' | 'info-square' | 'success' | 'warning' | 'warning-alt'>('info');
 
     // アカウントリスト取得
     const fetchAccounts = async () => {
@@ -91,7 +95,15 @@ export default function Home() {
             const response = await instance.post('/accounts', {accountName: accountName});
             console.log("新しいアカウントが作成されました:", response.data);
             fetchAccounts();
-        } catch (error) {
+        } catch (e) {
+            const error = e as Error | AxiosError;
+            if (axios.isAxiosError(error) && error.response) {
+                setToastTitle(error.response.data);
+                setToastSubtitle(error.message);
+                setToastKind('error');
+            } else {
+                // TODO native errorの場合
+            }
             console.error("アカウント作成エラー:", error);
         }
     }
@@ -108,6 +120,13 @@ export default function Home() {
                     くじ
                 </HeaderName>
             </Header>
+
+            {/*通知エリア*/}
+            {toastTitle && (<ToastNotification className={"toast-notification"} kind={toastKind} lowContrast={true}
+                                               onClose={() => setToastTitle("")}
+                                               subtitle={toastSubTitle} title={toastTitle}
+                                               timeout={4000}></ToastNotification>)}
+
 
             <Grid className={"cds--content"}>
                 <Column span={4}>
