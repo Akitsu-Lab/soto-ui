@@ -17,11 +17,10 @@ export const metadata: Metadata = {
     description: "秋津ラボの宝くじアプリ",
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function RootLayout(
+    {children,}: Readonly<{
+        children: React.ReactNode;
+    }>) {
     return (
         <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
