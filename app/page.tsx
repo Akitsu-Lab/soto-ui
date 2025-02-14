@@ -94,11 +94,11 @@ export default function Home() {
     const createAccount = async (accountName: string) => {
         try {
             const response = await instance.post('/accounts', {accountName: accountName});
-            console.log("新しいアカウントが作成されました:", response.data);
+            console.log("新しいアカウントが登録されました:", response.data);
             fetchAccounts();
         } catch (e) {
-            errorHandler(e, "アカウント追加失敗")
-            console.error("アカウント追加エラー:", e);
+            errorHandler(e, "アカウント登録失敗")
+            console.error("アカウント登録エラー:", e);
         }
     }
 
@@ -138,7 +138,7 @@ export default function Home() {
             <Grid className={"cds--content"}>
                 <Column span={4}>
                     <TextInput id="text-input-1" type="text" labelText={"アカウント名"}
-                               placeholder={"例：Kankuro"} helperText={"追加したいアカウントの名前"}
+                               placeholder={"例：カンクロウ"} helperText={"登録したいアカウントの名前"}
                                value={userNameInput} onChange={(e) => setUserNameInput(e.target.value)}></TextInput>
                 </Column>
                 <Column span={4}>
