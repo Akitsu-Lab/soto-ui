@@ -106,8 +106,8 @@ export default function Home() {
         const error = e as Error | AxiosError;
         if (axios.isAxiosError(error)) {
             setToastTitle(errTitle)
-            if (error.response) setToastSubtitle(`${error.message}. ${error.response.data}`);
-            else setToastSubtitle(`${error.message}`);
+            if (error.response) setToastSubtitle(`${error.response.data}. ${error.message}.`);
+            else setToastSubtitle(`${error.message}. ${error.code}`);
             setToastKind('error');
         } else {
             // TODO native errorの場合
