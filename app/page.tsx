@@ -3,6 +3,7 @@ import {
     Button,
     Column,
     DataTable,
+    DataTableSkeleton,
     Grid,
     Header,
     HeaderName,
@@ -13,10 +14,14 @@ import {
     TableHead,
     TableHeader,
     TableRow,
+    TableToolbar,
+    TableToolbarContent,
+    TableToolbarSearch,
     TextInput
 } from "@carbon/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
+import {Renew} from "@carbon/icons-react";
 
 // APIで受け取るアカウント情報の型
 interface UserAccount {
@@ -54,31 +59,32 @@ const headers = [
 export default function Home() {
 
     const [rows, setRows] = useState<UserAccount[]>([])
-
-
-    useEffect(() => {
-        console.log(process.env.API_SERVER_URL, instance.getUri())
-        instance.get('/accounts').then(function (response) {
-            // setRows(response.data)
-            console.log(response.data);
-            // 後で消す
+    const [loading, setLoading] = useState<boolean>(false);
+    // アカウントリスト取得
+    const fetchAccounts = async () => {
+        setLoading(true);
+        try {
+            const response = await instance.get('/accounts');
+            console.log("取得データ:", response.data);
             const transformedData: UserAccount[] = response.data.map((item: {
                 accountId: number;
                 accountName: string;
                 balance: number;
-                created_at: string;
-                updated_at: string;
             }) => ({
-                id: String(item.accountId), // `id` を `string` に変換
+                id: String(item.accountId),
                 accountName: item.accountName,
-                balance: item.balance,
-                created_at: item.created_at,
-                updated_at: item.updated_at,
+                balance: item.balance
             }));
             setRows(transformedData);
-        }).catch(function (error) {
-            console.log(error);
-        })
+        } catch (error) {
+            console.error("データ取得エラー:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAccounts();
     }, [])
 
 
@@ -92,8 +98,6 @@ export default function Home() {
 
             <Grid className={"cds--content"}>
                 <Column span={4}>
-                </Column>
-                <Column span={4}>
                     <TextInput id="text-input-1" type="text" labelText={"アカウント名"}
                                placeholder={"例：Kankuro"} helperText={"追加したいアカウントの名前"}></TextInput>
                 </Column>
@@ -104,34 +108,46 @@ export default function Home() {
 
             <Grid>
                 <Column span={16}>
-                    <DataTable rows={rows} headers={headers}>
 
-                        {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
-                            <TableContainer title={"アカウントテーブル"} description={"くじを買えるアカウントの一覧"}>
-                                <Table {...getTableProps()}>
-                                    <TableHead>
-                                        <TableRow>
-                                            {headers.map((header) => (
-                                                <TableHeader {...getHeaderProps({header, isSortable: true})}
-                                                             key={header.key}>
-                                                    {header.header}
-                                                </TableHeader>
-                                            ))}
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {rows.map((row) => (
-                                            <TableRow {...getRowProps({row})} key={row.id}>
-                                                {row.cells.map((cell) => (
-                                                    <TableCell key={cell.id}>{cell.value}</TableCell>
+                    {/*loadingの時はskeltonでそれ以外の時に通常のテーブルを表示*/}
+                    {loading ? <DataTableSkeleton headers={headers} aria-label="sample table"/> :
+                        <DataTable rows={rows} headers={headers}>
+
+                            {({rows, headers, getTableProps, getHeaderProps, getRowProps}) => (
+                                <TableContainer title={"アカウントテーブル"}
+                                                description={"くじを買えるアカウントの一覧"}>
+                                    <TableToolbar>
+                                        <TableToolbarContent>
+                                            <TableToolbarSearch/>
+                                            <Button kind="ghost" renderIcon={Renew} style={{color: "black"}}
+                                                    onClick={fetchAccounts} disabled={loading}></Button>
+                                        </TableToolbarContent>
+                                    </TableToolbar>
+
+                                    <Table {...getTableProps()}>
+                                        <TableHead>
+                                            <TableRow>
+                                                {headers.map((header) => (
+                                                    <TableHeader {...getHeaderProps({header, isSortable: true})}
+                                                                 key={header.key}>
+                                                        {header.header}
+                                                    </TableHeader>
                                                 ))}
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        )}
-                    </DataTable>
+                                        </TableHead>
+                                        <TableBody>
+                                            {rows.map((row) => (
+                                                <TableRow {...getRowProps({row})} key={row.id}>
+                                                    {row.cells.map((cell) => (
+                                                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            )}
+                        </DataTable>}
                 </Column>
             </Grid>
 
