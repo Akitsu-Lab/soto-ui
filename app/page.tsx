@@ -83,15 +83,8 @@ export default function Home() {
             }));
             setRows(transformedData);
         } catch (e) {
-            const error = e as Error | AxiosError;
-            if (axios.isAxiosError(error) && error.response) {
-                setToastTitle(error.response.data);
-                setToastSubtitle(error.message);
-                setToastKind('error');
-            } else {
-                // TODO native errorの場合
-            }
-            console.error("データ取得エラー:", error);
+            errorHandler(e, "データ取得失敗")
+            console.error("データ取得エラー:", e);
         } finally {
             setLoading(false);
         }
@@ -104,15 +97,21 @@ export default function Home() {
             console.log("新しいアカウントが作成されました:", response.data);
             fetchAccounts();
         } catch (e) {
-            const error = e as Error | AxiosError;
-            if (axios.isAxiosError(error) && error.response) {
-                setToastTitle(error.response.data);
-                setToastSubtitle(error.message);
-                setToastKind('error');
-            } else {
-                // TODO native errorの場合
-            }
-            console.error("アカウント作成エラー:", error);
+            errorHandler(e, "アカウント追加失敗")
+            console.error("アカウント追加エラー:", e);
+        }
+    }
+
+    const errorHandler = (e: unknown, errTitle: string) => {
+        const error = e as Error | AxiosError;
+        if (axios.isAxiosError(error)) {
+            setToastTitle(errTitle)
+            if (error.response) setToastSubtitle(`${error.message}. ${error.response.data}`);
+            else setToastSubtitle(`${error.message}`);
+            setToastKind('error');
+        } else {
+            // TODO native errorの場合
+            console.error("native errorが発生した", error);
         }
     }
 
