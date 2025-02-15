@@ -25,7 +25,7 @@ import {
   TextInput,
   ToastNotification,
 } from "@carbon/react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { Renew, TrashCan } from "@carbon/icons-react";
 
@@ -109,8 +109,7 @@ export default function Home() {
       console.error("アカウント: ${accountName} 登録録エラー:", e);
       return;
     }
-    setToastKind("success");
-    setToastTitle(`アカウント: ${accountName} 登録成功`);
+    showToastNotif("success", `アカウント: ${accountName} 登録成功`);
     await fetchAccounts();
   };
 
@@ -129,24 +128,37 @@ export default function Home() {
       }
     }
     console.log("バッチ削除成功:", selectedRows);
-    setToastKind("success");
-    setToastTitle("アカウント削除成功");
+    showToastNotif("success", "アカウント削除成功");
     await fetchAccounts();
   };
 
-  // エラーの通知出す
+  // エラー出た場合の対処
   const errorHandler = (e: unknown, errTitle: string) => {
-    const error = e as Error | AxiosError;
-    if (axios.isAxiosError(error)) {
-      setToastTitle(errTitle);
-      if (error.response)
-        setToastSubtitle(`${error.response.data}. ${error.message}.`);
-      else setToastSubtitle(`${error.message}. ${error.code}`);
-      setToastKind("error");
+    if (axios.isAxiosError(e)) {
+      const errorMessage = e.response
+        ? `${e.response.data}. ${e.message}.`
+        : `${e.message}. ${e.code}`;
+      showToastNotif("error", errTitle, errorMessage);
     } else {
-      // TODO native errorの場合
-      console.error("native errorが発生した", error);
+      console.error("native errorが発生した", e);
     }
+  };
+
+  // 通知出す用
+  const showToastNotif = (
+    kind:
+      | "error"
+      | "info"
+      | "info-square"
+      | "success"
+      | "warning"
+      | "warning-alt",
+    title: string,
+    subTitle: string = "",
+  ) => {
+    setToastKind(kind);
+    setToastTitle(title);
+    setToastSubtitle(subTitle);
   };
 
   useEffect(() => {
