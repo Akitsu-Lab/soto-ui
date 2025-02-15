@@ -3,6 +3,7 @@ import {
   Button,
   Column,
   DataTable,
+  DataTableRow,
   DataTableSkeleton,
   Grid,
   Header,
@@ -103,13 +104,37 @@ export default function Home() {
         accountName: accountName,
       });
       console.log("新しいアカウントが登録されました:", response.data);
-      fetchAccounts();
     } catch (e) {
-      errorHandler(e, "アカウント登録失敗");
-      console.error("アカウント登録エラー:", e);
+      errorHandler(e, `アカウント: ${accountName} 登録失敗`);
+      console.error("アカウント: ${accountName} 登録録エラー:", e);
+      return;
     }
+    setToastKind("success");
+    setToastTitle(`アカウント: ${accountName} 登録成功`);
+    await fetchAccounts();
   };
 
+  // アカウントバッチ削除
+  const batchDeleteClick = async (
+    selectedRows: DataTableRow<UserAccount[]>[],
+  ) => {
+    for (const row of selectedRows) {
+      try {
+        const response = await instance.delete(`/accounts/${row.id}`);
+        console.log("新しいアカウントが削除されました:", response.data);
+      } catch (e) {
+        errorHandler(e, `アカウント ${row.cells.at(1)?.value} 削除失敗`);
+        console.error("アカウント削除エラー:", e);
+        return;
+      }
+    }
+    console.log("バッチ削除成功:", selectedRows);
+    setToastKind("success");
+    setToastTitle("アカウント削除成功");
+    await fetchAccounts();
+  };
+
+  // エラーの通知出す
   const errorHandler = (e: unknown, errTitle: string) => {
     const error = e as Error | AxiosError;
     if (axios.isAxiosError(error)) {
@@ -177,82 +202,85 @@ export default function Home() {
               {({
                 rows,
                 headers,
-                getTableProps,
                 getHeaderProps,
                 getRowProps,
-              }) => (
-                <TableContainer
-                  title={"アカウントリスト"}
-                  description={"くじを買えるアカウントの一覧"}
-                >
-                  {/*テーブルコンテナ内上部*/}
-                  <TableToolbar>
-                    <TableBatchActions
-                      onCancel={function (): void {
-                        throw new Error("Function not implemented.");
-                      }}
-                      totalSelected={0}
-                    >
-                      <TableBatchAction renderIcon={TrashCan}>
-                        Delete
-                      </TableBatchAction>
-                    </TableBatchActions>
-                    <TableToolbarContent>
-                      <TableToolbarSearch />
-                      <Button
-                        kind="ghost"
-                        renderIcon={Renew}
-                        style={{ color: "black" }}
-                        onClick={fetchAccounts}
-                        disabled={loading}
-                      ></Button>
-                    </TableToolbarContent>
-                  </TableToolbar>
-
-                  {/**/}
-                  <Table {...getTableProps()}>
-                    <TableHead>
-                      <TableRow>
-                        <TableSelectAll
-                          id={""}
-                          name={""}
-                          onSelect={() => {}}
-                        ></TableSelectAll>
-                        {headers.map((header) => (
-                          <TableHeader
-                            {...getHeaderProps({ header, isSortable: true })}
-                            key={header.key}
-                          >
-                            {header.header}
-                          </TableHeader>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {rows.map((row, index) => (
-                        <TableRow
-                          {...getRowProps({
-                            row,
-                          })}
-                          key={index}
+                getSelectionProps,
+                getToolbarProps,
+                getBatchActionProps,
+                onInputChange,
+                selectedRows,
+                getTableProps,
+                getTableContainerProps,
+              }) => {
+                const batchActionProps = getBatchActionProps();
+                return (
+                  <TableContainer
+                    title={"アカウントリスト"}
+                    description={"くじを買えるアカウントの一覧"}
+                    {...getTableContainerProps()}
+                  >
+                    {/*テーブルコンテナ内上部*/}
+                    <TableToolbar {...getToolbarProps()}>
+                      {/*バッチ削除*/}
+                      <TableBatchActions {...batchActionProps}>
+                        <TableBatchAction
+                          renderIcon={TrashCan}
+                          onClick={() => batchDeleteClick(selectedRows)}
                         >
-                          <TableSelectRow
-                            onChange={() => {}}
-                            id={""}
-                            name={""}
-                            onSelect={function (): void {
-                              throw new Error("Function not implemented.");
-                            }}
-                          />
-                          {row.cells.map((cell) => (
-                            <TableCell key={cell.id}>{cell.value}</TableCell>
+                          Delete
+                        </TableBatchAction>
+                      </TableBatchActions>
+                      <TableToolbarContent>
+                        <TableToolbarSearch
+                          tabIndex={
+                            batchActionProps.shouldShowBatchActions ? -1 : 0
+                          }
+                          onChange={() => {}}
+                        />
+                        <Button
+                          kind="ghost"
+                          renderIcon={Renew}
+                          style={{ color: "black" }}
+                          onClick={fetchAccounts}
+                          disabled={loading}
+                        ></Button>
+                      </TableToolbarContent>
+                    </TableToolbar>
+
+                    {/**/}
+                    <Table {...getTableProps()}>
+                      <TableHead>
+                        <TableRow>
+                          <TableSelectAll
+                            {...getSelectionProps()}
+                          ></TableSelectAll>
+                          {headers.map((header) => (
+                            <TableHeader
+                              {...getHeaderProps({ header, isSortable: true })}
+                              key={header.key}
+                            >
+                              {header.header}
+                            </TableHeader>
                           ))}
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
+                      </TableHead>
+                      <TableBody>
+                        {rows.map((row) => (
+                          <TableRow key={row.id}>
+                            <TableSelectRow
+                              {...getSelectionProps({ row })}
+                              onChange={() => {}}
+                            />
+                            {row.cells.map((cell) => (
+                              <TableCell key={cell.id}>{cell.value}</TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                );
+              }}
             </DataTable>
           )}
         </Column>
