@@ -28,6 +28,8 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Renew, TrashCan } from "@carbon/icons-react";
+import { ToastNotificationProps } from "@carbon/react/lib/components/Notification/Notification";
+import Link from "next/link";
 
 // APIで受け取るアカウント情報の型
 interface UserAccount {
@@ -65,11 +67,8 @@ export default function Home() {
   const [rows, setRows] = useState<UserAccount[]>([]);
   const [userNameInput, setUserNameInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [toastTitle, setToastTitle] = useState<string>("");
-  const [toastSubTitle, setToastSubtitle] = useState<string>("");
-  const [toastKind, setToastKind] = useState<
-    "error" | "info" | "info-square" | "success" | "warning" | "warning-alt"
-  >("info");
+  const [toastNotificationProps, setToastNotificationProps] =
+    useState<ToastNotificationProps | null>(null);
 
   // アカウントリスト取得
   const fetchAccounts = async () => {
@@ -109,7 +108,10 @@ export default function Home() {
       console.error("アカウント: ${accountName} 登録録エラー:", e);
       return;
     }
-    showToastNotif("success", `アカウント: ${accountName} 登録成功`);
+    setToastNotificationProps({
+      kind: "success",
+      title: `アカウント: ${accountName} 登録成功`,
+    });
     await fetchAccounts();
   };
 
@@ -128,7 +130,7 @@ export default function Home() {
       }
     }
     console.log("バッチ削除成功:", selectedRows);
-    showToastNotif("success", "アカウント削除成功");
+    setToastNotificationProps({ kind: "success", title: "アカウント削除成功" });
     await fetchAccounts();
   };
 
@@ -138,50 +140,37 @@ export default function Home() {
       const errorMessage = e.response
         ? `${e.response.data}. ${e.message}.`
         : `${e.message}. ${e.code}`;
-      showToastNotif("error", errTitle, errorMessage);
+      setToastNotificationProps({
+        kind: "error",
+        title: errTitle,
+        subtitle: errorMessage,
+      });
     } else {
       console.error("native errorが発生した", e);
     }
   };
 
-  // 通知出す用
-  const showToastNotif = (
-    kind:
-      | "error"
-      | "info"
-      | "info-square"
-      | "success"
-      | "warning"
-      | "warning-alt",
-    title: string,
-    subTitle: string = "",
-  ) => {
-    setToastKind(kind);
-    setToastTitle(title);
-    setToastSubtitle(subTitle);
-  };
-
+  // 通知用
   useEffect(() => {
     fetchAccounts();
   }, []);
 
   return (
-    <div>
+    <>
       <Header aria-label="Platform Name">
         <HeaderName href="#" prefix="秋津ラボ">
           くじ
         </HeaderName>
       </Header>
-
       {/*通知エリア*/}
-      {toastTitle && (
+      {toastNotificationProps && (
         <ToastNotification
-          className={"toast-notification"}
-          kind={toastKind}
+          className="toast-notification"
+          kind={toastNotificationProps.kind}
           lowContrast={true}
-          onClose={() => setToastTitle("")}
-          subtitle={toastSubTitle}
-          title={toastTitle}
+          onClose={() => setToastNotificationProps(null)}
+          subtitle={toastNotificationProps.subtitle}
+          title={toastNotificationProps.title}
           timeout={4000}
         ></ToastNotification>
       )}
@@ -189,7 +178,7 @@ export default function Home() {
       <Grid className={"cds--content"}>
         <Column span={4}>
           <TextInput
-            id="text-input-1"
+            id="accountName"
             type="text"
             labelText={"アカウント名"}
             placeholder={"例：カンクロウ"}
@@ -257,7 +246,7 @@ export default function Home() {
                       </TableToolbarContent>
                     </TableToolbar>
 
-                    {/**/}
+                    {/* テーブルのコンテンツ */}
                     <Table {...getTableProps()}>
                       <TableHead>
                         <TableRow>
@@ -295,6 +284,12 @@ export default function Home() {
           )}
         </Column>
       </Grid>
-    </div>
+
+      <Grid className={"cds--content"}>
+        <Column span={8}>
+          <Link href={"purchase"}>くじの購入画面へ</Link>
+        </Column>
+      </Grid>
+    </>
   );
 }
