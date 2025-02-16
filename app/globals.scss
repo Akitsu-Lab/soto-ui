@@ -1,4 +1,5 @@
 @use '@carbon/react';
+@use '@carbon/layout';
 
 /// Padding was introduced in 10.3.0, needs an option to let grid set the viewport gutter
 /// @link https://github.com/carbon-design-system/carbon/issues/3010
@@ -12,4 +13,16 @@
   position: fixed;
   right: 0;
   z-index: 11;
+}
+
+.under-header {
+  margin-top: 3rem;
+  background: var(--cds-background);
+  align-items: center;
+}
+
+.normal-content {
+  padding: layout.$spacing-03;
+  background: var(--cds-background);
+  align-items: center;
 }
