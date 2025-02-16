@@ -64,7 +64,7 @@ const headers = [
 ];
 
 export default function Home() {
-  const [rows, setRows] = useState<UserAccount[]>([]);
+  const [rows, setRows] = useState<UserAccount[] | null>(null);
   const [userNameInput, setUserNameInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [toastNotificationProps, setToastNotificationProps] =
@@ -196,7 +196,7 @@ export default function Home() {
       <Grid>
         <Column span={16}>
           {/*loadingの時はskeltonでそれ以外の時に通常のテーブルを表示*/}
-          {loading ? (
+          {loading || rows == null ? (
             <DataTableSkeleton headers={headers} aria-label="sample table" />
           ) : (
             <DataTable rows={rows} headers={headers}>
