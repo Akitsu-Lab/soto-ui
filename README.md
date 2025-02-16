@@ -19,5 +19,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## 開発環境
 
-保存時のPrettierの設定
-https://pleiades.io/help/webstorm/prettier.html#ws_prettier_install
+- 保存時のPrettierの設定
+  https://pleiades.io/help/webstorm/prettier.html#ws_prettier_install
+
+## 参考資料
+
+- [Carbon Design System](https://carbondesignsystem.com/)
+- Next.jsのpage構造など
+  https://zenn.dev/blueish/articles/4b2ae3781ade57
+- soto-account のswagger https://akitsu-lab.github.io/soto-swagger
