@@ -23,13 +23,12 @@ import {
   TableToolbarContent,
   TableToolbarSearch,
   TextInput,
-  ToastNotification,
 } from "@carbon/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Renew, TrashCan } from "@carbon/icons-react";
-import { ToastNotificationProps } from "@carbon/react/lib/components/Notification/Notification";
 import Link from "next/link";
+import { Slide, toast, ToastContainer } from "react-toastify";
 
 // APIで受け取るアカウント情報の型
 interface UserAccount {
@@ -67,8 +66,6 @@ export default function Home() {
   const [rows, setRows] = useState<UserAccount[] | null>(null);
   const [userNameInput, setUserNameInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [toastNotificationProps, setToastNotificationProps] =
-    useState<ToastNotificationProps | null>(null);
 
   // アカウントリスト取得
   const fetchAccounts = async () => {
@@ -108,10 +105,7 @@ export default function Home() {
       console.error("アカウント: ${accountName} 登録録エラー:", e);
       return;
     }
-    setToastNotificationProps({
-      kind: "success",
-      title: `アカウント: ${accountName} 登録成功`,
-    });
+    toast.success(`アカウント: ${accountName} 登録成功`);
     await fetchAccounts();
   };
 
@@ -130,7 +124,7 @@ export default function Home() {
       }
     }
     console.log("バッチ削除成功:", selectedRows);
-    setToastNotificationProps({ kind: "success", title: "アカウント削除成功" });
+    toast.success("アカウント削除成功");
     await fetchAccounts();
   };
 
@@ -140,11 +134,7 @@ export default function Home() {
       const errorMessage = e.response
         ? `${e.response.data}. ${e.message}.`
         : `${e.message}. ${e.code}`;
-      setToastNotificationProps({
-        kind: "error",
-        title: errTitle,
-        subtitle: errorMessage,
-      });
+      toast.error(`${errTitle}. ${errorMessage}`);
     } else {
       console.error("native errorが発生した", e);
     }
@@ -162,18 +152,15 @@ export default function Home() {
           くじ
         </HeaderName>
       </Header>
+
       {/*通知エリア*/}
-      {toastNotificationProps && (
-        <ToastNotification
-          className="toast-notification"
-          kind={toastNotificationProps.kind}
-          lowContrast={true}
-          onClose={() => setToastNotificationProps(null)}
-          subtitle={toastNotificationProps.subtitle}
-          title={toastNotificationProps.title}
-          timeout={4000}
-        ></ToastNotification>
-      )}
+      <ToastContainer
+        autoClose={4000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        pauseOnHover={true}
+        transition={Slide}
+      />
 
       <Grid className={"cds--content"}>
         <Column span={4}>
